@@ -1,0 +1,129 @@
+# ===== compose.09-full.yml =====
+# ตัวอย่างเต็ม: Web + API + Database + Cache (Redis)
+
+services:
+  # ---- Frontend (Nginx) ----
+  web:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./html:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - frontend
+    restart: unless-stopped
+
+  # ---- API (Go App) ----
+  api:
+    build:
+      context: ../02-dockerfile
+      dockerfile: Dockerfile.multi02
+    expose:
+      - "8080"
+    environment:
+      PORT: "8080"
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: workshopdb
+      DB_USER: workshop
+      DB_PASSWORD: workshop123
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8080/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - frontend
+      - backend
+    restart: unless-stopped
+
+  # ---- Database (PostgreSQL) ----
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: workshopdb
+      POSTGRES_USER: workshop
+      POSTGRES_PASSWORD: workshop123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U workshop -d workshopdb" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    networks:
+      - backend
+    restart: unless-stopped
+
+  # ---- Cache (Redis) ----
+  redis:
+    image: redis:7-alpine
+    command: [ "redis-server", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru" ]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    networks:
+      - backend
+    restart: unless-stopped
+
+  # ---- DB Admin UI ----
+  adminer:
+    image: adminer
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+    networks:
+      - backend
+    restart: unless-stopped
+    profiles:
+      - debug # รันเฉพาะเมื่อระบุ --profile debug
+
+networks:
+  frontend:
+  backend:
+
+
+volumes:
+  pgdata:
+  redis-data:
+
+    # ============================================
+    # วิธีใช้:
+    #
+    # รัน (ไม่รวม adminer):
+    #   docker compose -f compose.09-full.yml up --build -d
+    #
+    # รัน (รวม adminer สำหรับ debug):
+    #   docker compose -f compose.09-full.yml --profile debug up --build -d
+    #
+    # ดู status:
+    #   docker compose -f compose.09-full.yml ps
+    #
+    # ดู logs:
+    #   docker compose -f compose.09-full.yml logs -f
+    #   docker compose -f compose.09-full.yml logs -f api
+    #
+    # หยุด:
+    #   docker compose -f compose.09-full.yml down
+    #
+    # หยุด + ลบ data:
+    #   docker compose -f compose.09-full.yml down -v
+    # ============================================

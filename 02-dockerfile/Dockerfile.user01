@@ -1,0 +1,22 @@
+# ===== Dockerfile.user01 =====
+# USER - กำหนด user/group ที่ใช้รัน RUN, CMD, ENTRYPOINT
+# ⚠️ Best Practice: อย่ารันเป็น root ใน production
+
+FROM alpine:3
+
+# สร้าง user + group
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /app
+
+RUN echo "Hello from non-root user" > message.txt && \
+  chown -R appuser:appgroup /app
+
+# เปลี่ยน user (ตั้งแต่บรรทัดนี้เป็นต้นไปจะรันเป็น appuser)
+USER appuser
+
+CMD ["sh", "-c", "whoami && id && cat /app/message.txt"]
+
+# Build:  docker build -f Dockerfile.user01 -t workshop-user01 .
+# Run:    docker run --rm workshop-user01
+# Output: appuser, uid=..., Hello from non-root user

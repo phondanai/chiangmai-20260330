@@ -1,0 +1,20 @@
+# ===== Dockerfile.multi02-single =====
+# Go app — Single-stage build (ไม่ใช้ multi-stage)
+# เปรียบเทียบขนาดกับ Dockerfile.multi02
+
+FROM golang:1.22-alpine
+
+WORKDIR /app
+
+COPY app-go/go.mod .
+COPY app-go/main.go .
+
+RUN go build -o server .
+
+EXPOSE 8080
+CMD ["./server"]
+
+# Build:  docker build -f Dockerfile.multi02-single -t workshop-go-single .
+# Run:    docker run --rm -p 8080:8080 workshop-go-single
+# Size:   docker images workshop-go-single
+#         ≈ 200-300 MB (รวม Go toolchain ทั้งหมด!)

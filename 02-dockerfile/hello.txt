@@ -1,0 +1,2 @@
+Hello from COPY!
+This file was copied into the Docker image.

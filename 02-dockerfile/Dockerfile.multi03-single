@@ -1,0 +1,19 @@
+# ===== Dockerfile.multi03-single =====
+# Node.js app — Single-stage build (ไม่ใช้ multi-stage)
+
+FROM node:22
+
+WORKDIR /app
+
+COPY app-node/package.json .
+RUN npm install
+
+COPY app-node/server.js .
+
+EXPOSE 3000
+CMD ["node", "server.js"]
+
+# Build:  docker build -f Dockerfile.multi03-single -t workshop-node-single .
+# Run:    docker run --rm -p 3000:3000 workshop-node-single
+# Size:   docker images workshop-node-single
+#         ≈ 1.1 GB (รวม build tools, npm cache, devDependencies ทั้งหมด)

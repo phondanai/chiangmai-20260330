@@ -1,0 +1,37 @@
+# ===== compose.06-multi.yml =====
+# รันหลาย service พร้อมกัน (web + database)
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/usr/share/nginx/html:ro
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: workshopdb
+      POSTGRES_USER: workshop
+      POSTGRES_PASSWORD: workshop123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  adminer:
+    image: adminer
+    ports:
+      - "8081:8080"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+
+    # Run:    docker compose -f compose.06-multi.yml up -d
+    # Web:    http://localhost:8080
+    # DB UI:  http://localhost:8081 (Adminer — System: PostgreSQL, Server: db, User: workshop, Password: workshop123)
+    # Stop:   docker compose -f compose.06-multi.yml down

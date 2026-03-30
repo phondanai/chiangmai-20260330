@@ -1,0 +1,50 @@
+# ===== compose.07-depends.yml =====
+# depends_on & healthcheck — ควบคุมลำดับการ start
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  api:
+    image: alpine:3
+    command: >
+      sh -c "
+        apk add --no-cache curl &&
+        echo 'API starting...' &&
+        while true; do echo 'OK' > /tmp/health; sleep 10; done
+      "
+    healthcheck:
+      test: [ "CMD", "cat", "/tmp/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: workshop123
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+# ลำดับการ start: db → (healthy) → api → (healthy) → web
+#
+# Run:    docker compose -f compose.07-depends.yml up -d
+# Watch:  docker compose -f compose.07-depends.yml ps
+# Logs:   docker compose -f compose.07-depends.yml logs -f
+# Stop:   docker compose -f compose.07-depends.yml down

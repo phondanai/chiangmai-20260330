@@ -1,0 +1,18 @@
+# ===== Dockerfile.label01 =====
+# LABEL - เพิ่ม metadata ให้ image (ไม่มีผลต่อการทำงาน)
+
+FROM alpine:3
+
+LABEL maintainer="workshop@example.com"
+LABEL version="1.0"
+LABEL description="Docker Workshop Label Example"
+LABEL org.opencontainers.image.source="https://github.com/example/workshop"
+LABEL org.opencontainers.image.created="2026-03-30"
+
+CMD ["echo", "Check labels with: docker inspect workshop-label01"]
+
+# Build:  docker build -f Dockerfile.label01 -t workshop-label01 .
+# Run:    docker run --rm workshop-label01
+#
+# ดู labels:
+# docker inspect workshop-label01 --format '{{json .Config.Labels}}' | jq

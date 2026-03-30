@@ -1,0 +1,29 @@
+# ===== compose.08-build.yml =====
+# build image จาก Dockerfile ใน compose
+
+services:
+  go-app:
+    build:
+      context: ../02-dockerfile
+      dockerfile: Dockerfile.multi02
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+    restart: unless-stopped
+
+  node-app:
+    build:
+      context: ../02-dockerfile
+      dockerfile: Dockerfile.multi03
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+    restart: unless-stopped
+
+# Build & Run:  docker compose -f compose.08-build.yml up --build -d
+# Test Go:      curl http://localhost:8080
+# Test Node:    curl http://localhost:3000
+# Rebuild:      docker compose -f compose.08-build.yml build
+# Stop:         docker compose -f compose.08-build.yml down

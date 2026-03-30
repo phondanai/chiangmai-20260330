@@ -1,0 +1,15 @@
+# ===== Dockerfile.run01 =====
+# RUN - รันคำสั่งระหว่าง build เพื่อติดตั้ง package หรือเตรียม environment
+
+FROM alpine:3
+
+# แต่ละ RUN สร้าง 1 layer
+RUN apk update
+RUN apk add curl
+RUN apk add jq
+
+CMD ["curl", "--version"]
+
+# Build:  docker build -f Dockerfile.run01 -t workshop-run01 .
+# Run:    docker run --rm workshop-run01
+# หมายเหตุ: 3 RUN = 3 layers (ไม่ดี ดูวิธีที่ดีกว่าใน Dockerfile.run02)

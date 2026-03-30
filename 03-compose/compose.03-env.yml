@@ -1,0 +1,21 @@
+# ===== compose.03-env.yml =====
+# ใช้ environment variables
+
+services:
+  app:
+    image: alpine:3
+    environment:
+      - APP_NAME=Docker Workshop
+      - APP_ENV=development
+      - APP_DEBUG=true
+    command: [ "sh", "-c", "echo \"App: $$APP_NAME, Env: $$APP_ENV, Debug: $$APP_DEBUG\"" ]
+
+  # อีกวิธี — ใช้ env_file
+  app2:
+    image: alpine:3
+    env_file:
+      - .env.example
+    command: [ "sh", "-c", "env | grep APP_" ]
+
+# Run:    docker compose -f compose.03-env.yml up
+# Stop:   docker compose -f compose.03-env.yml down

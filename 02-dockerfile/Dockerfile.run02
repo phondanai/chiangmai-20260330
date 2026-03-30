@@ -1,0 +1,18 @@
+# ===== Dockerfile.run02 =====
+# RUN - chain คำสั่งด้วย && เพื่อลด layer + ลบ cache
+
+FROM alpine:3
+
+# รวมคำสั่งเป็น 1 RUN = 1 layer (Best Practice)
+RUN apk update && \
+  apk add --no-cache \
+  curl \
+  jq \
+  wget && \
+  rm -rf /var/cache/apk/*
+
+CMD ["sh", "-c", "echo 'curl:' $(curl --version | head -1) && echo 'jq:' $(jq --version)"]
+
+# Build:  docker build -f Dockerfile.run02 -t workshop-run02 .
+# Run:    docker run --rm workshop-run02
+# เปรียบเทียบขนาด: docker images | grep workshop-run0

@@ -1,0 +1,10 @@
+# ===== compose.01-basic.yml =====
+# เริ่มต้น — รัน service เดียว
+
+services:
+  web:
+    image: nginx:alpine
+
+# Run:    docker compose -f compose.01-basic.yml up -d
+# Check:  docker compose -f compose.01-basic.yml ps
+# Stop:   docker compose -f compose.01-basic.yml down

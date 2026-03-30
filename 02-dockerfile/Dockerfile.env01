@@ -1,0 +1,21 @@
+# ===== Dockerfile.env01 =====
+# ENV - ตั้ง environment variable ที่อยู่ทั้งตอน build และ runtime
+
+FROM alpine:3
+
+ENV APP_NAME="Docker Workshop"
+ENV APP_VERSION="1.0.0"
+ENV APP_ENV=development
+
+WORKDIR /app
+
+# ใช้ ENV ใน RUN ได้
+RUN echo "Building ${APP_NAME} v${APP_VERSION}" > build-info.txt
+
+CMD ["sh", "-c", "echo \"App: $APP_NAME\" && echo \"Version: $APP_VERSION\" && echo \"Env: $APP_ENV\""]
+
+# Build:  docker build -f Dockerfile.env01 -t workshop-env01 .
+# Run:    docker run --rm workshop-env01
+#
+# Override ตอน run:
+# Run:    docker run --rm -e APP_ENV=production workshop-env01

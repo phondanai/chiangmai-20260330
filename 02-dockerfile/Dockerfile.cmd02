@@ -1,0 +1,22 @@
+# ===== Dockerfile.cmd02 =====
+# CMD vs ENTRYPOINT
+# ENTRYPOINT = คำสั่งหลักที่เปลี่ยนไม่ได้ (ง่ายๆ)
+# CMD = argument default ให้ ENTRYPOINT
+
+FROM alpine:3
+
+# ENTRYPOINT กำหนดโปรแกรมหลัก
+ENTRYPOINT ["echo"]
+
+# CMD กำหนด argument default
+CMD ["Hello Workshop"]
+
+# Build:  docker build -f Dockerfile.cmd02 -t workshop-cmd02 .
+#
+# Run:    docker run --rm workshop-cmd02
+# Output: Hello Workshop
+#
+# Run:    docker run --rm workshop-cmd02 "Goodbye Workshop"
+# Output: Goodbye Workshop
+#
+# สังเกต: argument ที่ส่งตอน run จะ override CMD แต่ไม่ override ENTRYPOINT

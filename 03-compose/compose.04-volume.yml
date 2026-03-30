@@ -1,0 +1,30 @@
+# ===== compose.04-volume.yml =====
+# Volume & Bind Mount
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      # bind mount — mount folder จาก host (เหมาะตอน develop)
+      - ./html:/usr/share/nginx/html:ro
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: workshop123
+      POSTGRES_DB: workshopdb
+    volumes:
+      # named volume — data persist แม้ลบ container (เหมาะ production)
+      - db-data:/var/lib/postgresql/data
+
+# ประกาศ named volume
+volumes:
+  db-data:
+
+    # Run:    docker compose -f compose.04-volume.yml up -d
+    # Test:   curl http://localhost:8080
+    # Check:  docker volume ls | grep db-data
+    # Stop:   docker compose -f compose.04-volume.yml down
+    # ลบ volume ด้วย: docker compose -f compose.04-volume.yml down -v

@@ -1,0 +1,25 @@
+# ===== Dockerfile.arg01 =====
+# ARG - build-time variable ใช้ได้เฉพาะตอน build (ไม่มีใน runtime)
+
+FROM alpine:3
+
+# กำหนด ARG พร้อมค่า default
+ARG APP_VERSION=1.0.0
+ARG BUILD_DATE
+
+# ARG ใช้ใน RUN ได้
+RUN echo "Version: ${APP_VERSION}, Built: ${BUILD_DATE}" > /build-info.txt
+
+# ถ้าต้องการใช้ตอน runtime ต้อง assign ให้ ENV
+ENV APP_VERSION=${APP_VERSION}
+
+CMD ["sh", "-c", "cat /build-info.txt && echo \"Runtime APP_VERSION=$APP_VERSION\""]
+
+# Build:  docker build -f Dockerfile.arg01 -t workshop-arg01 .
+# Run:    docker run --rm workshop-arg01
+#
+# Pass ARG ตอน build:
+# Build:  docker build -f Dockerfile.arg01 \
+#           --build-arg APP_VERSION=2.0.0 \
+#           --build-arg BUILD_DATE=$(date +%Y-%m-%d) \
+#           -t workshop-arg01 .

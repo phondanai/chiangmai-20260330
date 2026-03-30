@@ -1,0 +1,18 @@
+# ===== Dockerfile.copy01 =====
+# COPY - copy ไฟล์/โฟลเดอร์จาก build context เข้า image
+
+FROM nginx:alpine
+
+# copy ไฟล์เดียว
+COPY hello.txt /usr/share/nginx/html/hello.txt
+
+# copy ทั้ง directory
+COPY html/ /usr/share/nginx/html/
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+# Build:  docker build -f Dockerfile.copy01 -t workshop-copy01 .
+# Run:    docker run --rm -p 8080:80 workshop-copy01
+# เปิด: http://localhost:8080
+# หรือ: curl http://localhost:8080/hello.txt

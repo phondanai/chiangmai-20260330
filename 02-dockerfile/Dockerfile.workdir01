@@ -1,0 +1,20 @@
+# ===== Dockerfile.workdir01 =====
+# WORKDIR - กำหนด working directory สำหรับคำสั่ง RUN, CMD, ENTRYPOINT, COPY, ADD
+# ถ้า directory ไม่มี จะสร้างให้อัตโนมัติ
+
+FROM alpine:3
+
+# ไม่ต้อง mkdir เอง WORKDIR จะสร้างให้
+WORKDIR /app
+
+RUN echo "created in /app" > info.txt
+
+WORKDIR /app/src
+
+RUN echo "created in /app/src" > code.txt
+
+# ตอนรัน container จะอยู่ที่ /app/src
+CMD ["sh", "-c", "pwd && echo '--- /app ---' && ls /app && echo '--- /app/src ---' && ls /app/src"]
+
+# Build:  docker build -f Dockerfile.workdir01 -t workshop-workdir01 .
+# Run:    docker run --rm workshop-workdir01

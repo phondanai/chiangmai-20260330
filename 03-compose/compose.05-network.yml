@@ -1,0 +1,42 @@
+# ===== compose.05-network.yml =====
+# กำหนด Network — ให้ service คุยกันได้ผ่าน service name
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    networks:
+      - frontend
+
+  api:
+    image: alpine:3
+    command: [ "sh", "-c", "apk add --no-cache curl && while true; do echo 'API running'; sleep 30; done" ]
+    networks:
+      - frontend
+      - backend
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: workshop123
+    networks:
+      - backend # db อยู่เฉพาะ backend — web เข้าถึงไม่ได้โดยตรง
+
+networks:
+  frontend:
+  backend:
+
+    # Run:    docker compose -f compose.05-network.yml up -d
+    #
+    # ทดสอบ:
+    #   api สามารถ ping web ได้ (อยู่ใน frontend เดียวกัน):
+    #     docker compose -f compose.05-network.yml exec api ping -c 2 web
+    #
+    #   api สามารถ ping db ได้ (อยู่ใน backend เดียวกัน):
+    #     docker compose -f compose.05-network.yml exec api ping -c 2 db
+    #
+    #   web ไม่สามารถ ping db ได้ (คนละ network):
+    #     docker compose -f compose.05-network.yml exec web ping -c 2 db  # FAIL!
+    #
+    # Stop:   docker compose -f compose.05-network.yml down

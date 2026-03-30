@@ -1,0 +1,27 @@
+# ===== Dockerfile.multi01 =====
+# Multi-stage Build (Basic)
+# ใช้หลาย FROM ใน Dockerfile เดียว เพื่อแยก build กับ runtime
+# image สุดท้ายจะมีแค่สิ่งที่ COPY มาจาก stage ก่อนหน้า
+
+# ---- Stage 1: Build ----
+FROM alpine:3 AS builder
+
+RUN apk add --no-cache gcc musl-dev
+
+WORKDIR /build
+RUN echo '#include <stdio.h>\nint main(){printf("Hello from multi-stage!\\n");return 0;}' > hello.c
+RUN gcc -static -o hello hello.c
+
+# ---- Stage 2: Runtime ----
+FROM alpine:3
+
+WORKDIR /app
+# COPY จาก stage builder เท่านั้น (ไม่เอา gcc, source code)
+COPY --from=builder /build/hello .
+
+CMD ["./hello"]
+
+# Build:  docker build -f Dockerfile.multi01 -t workshop-multi01 .
+# Run:    docker run --rm workshop-multi01
+#
+# สังเกต: image สุดท้ายไม่มี gcc อยู่ → ขนาดเล็กลงมาก

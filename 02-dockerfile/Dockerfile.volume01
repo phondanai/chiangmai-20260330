@@ -1,0 +1,23 @@
+# ===== Dockerfile.volume01 =====
+# VOLUME - ประกาศ mount point สำหรับ persistent data
+# Data ใน VOLUME จะไม่หายเมื่อ container ถูกลบ (ถ้าใช้ named volume)
+
+FROM alpine:3
+
+WORKDIR /app
+
+# ประกาศ volume
+VOLUME ["/app/data"]
+
+RUN echo "initial data" > /app/data/init.txt
+
+CMD ["sh", "-c", "ls -la /app/data/ && cat /app/data/init.txt"]
+
+# Build:  docker build -f Dockerfile.volume01 -t workshop-volume01 .
+# Run:    docker run --rm workshop-volume01
+#
+# ใช้ named volume:
+# Run:    docker run --rm -v mydata:/app/data workshop-volume01
+#
+# ใช้ bind mount:
+# Run:    docker run --rm -v $(pwd)/data:/app/data workshop-volume01

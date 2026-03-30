@@ -1,0 +1,27 @@
+# ===== Dockerfile.add01 =====
+# ADD - เหมือน COPY แต่เพิ่มความสามารถ:
+#   1. แตก tar อัตโนมัติ (เฉพาะ local file เท่านั้น)
+#   2. ดาวน์โหลดจาก URL ได้ (แต่ไม่แตก tar จาก URL!)
+
+FROM alpine:3
+
+# สร้าง tar file สำหรับทดสอบ
+RUN mkdir -p /tmp/testdata && \
+  echo "file1" > /tmp/testdata/a.txt && \
+  echo "file2" > /tmp/testdata/b.txt && \
+  cd /tmp && tar czf /tmp/test.tar.gz testdata/
+
+# ADD จะแตก tar.gz อัตโมมัติ
+ADD test.tar.gz /app/
+
+WORKDIR /app
+CMD ["ls", "-la", "/app/testdata/"]
+
+# Build:  docker build -f Dockerfile.add01 -t workshop-add01 .
+# Run:    docker run --rm workshop-add01
+#
+# ⚠️ ข้อควรจำ:
+#   - ADD แตก tar เฉพาะ local file (tar, tar.gz, tar.bz2, tar.xz)
+#   - ADD จาก URL จะไม่แตก → ใช้ RUN wget + tar แทน
+#   - zip ไม่แตก → ใช้ RUN unzip แทน
+#   - ถ้าไม่ต้องการแตกไฟล์ ใช้ COPY แทน ADD (Best Practice)

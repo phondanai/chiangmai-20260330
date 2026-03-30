@@ -1,0 +1,12 @@
+# ===== Dockerfile.from01 =====
+# FROM - เลือก base image
+# เป็นคำสั่งแรกที่ต้องมีเสมอใน Dockerfile
+
+# ใช้ alpine เป็น base image (ขนาดเล็ก ~7MB)
+FROM alpine:3
+
+# คำสั่ง default เมื่อรัน container
+CMD ["cat", "/etc/os-release"]
+
+# Build:  docker build -f Dockerfile.from01 -t workshop-from01 .
+# Run:    docker run --rm workshop-from01

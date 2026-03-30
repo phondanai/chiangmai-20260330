@@ -1,0 +1,14 @@
+# ===== Dockerfile.from02 =====
+# FROM scratch - สร้างจาก image เปล่า (0 bytes)
+# ใช้เมื่อต้องการ image เล็กที่สุด เช่น static binary
+
+FROM scratch
+
+# copy static binary เข้าไป (ตัวอย่างนี้ต้องมี hello binary ที่ compile แล้ว)
+COPY hello /hello
+
+CMD ["/hello"]
+
+# Build:  docker build -f Dockerfile.from02 -t workshop-from02 .
+# หมายเหตุ: ต้องมีไฟล์ hello ที่เป็น static binary ก่อน
+#           ดูตัวอย่างจริงใน Dockerfile.multi02 (Go multi-stage)

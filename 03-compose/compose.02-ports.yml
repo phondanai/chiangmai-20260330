@@ -1,0 +1,13 @@
+# ===== compose.02-ports.yml =====
+# กำหนด port mapping — เข้าถึงจาก host ได้
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80" # host:container
+      # - "8443:443"  # สามารถ map หลาย port ได้
+
+      # Run:    docker compose -f compose.02-ports.yml up -d
+      # Test:   curl http://localhost:8080
+      # Stop:   docker compose -f compose.02-ports.yml down

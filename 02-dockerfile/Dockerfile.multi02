@@ -1,0 +1,37 @@
+# ===== Dockerfile.multi02 =====
+# Go app — Multi-stage build
+# เปรียบเทียบขนาดกับ Dockerfile.multi02-single
+
+# ---- Stage 1: Build ----
+FROM golang:1.22-alpine AS builder
+
+WORKDIR /app
+
+COPY app-go/go.mod .
+COPY app-go/main.go .
+
+# Build static binary
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o server .
+
+# ---- Stage 2: Runtime (scratch = 0 bytes base) ----
+FROM scratch
+
+COPY --from=builder /app/server /server
+
+EXPOSE 8080
+CMD ["/server"]
+
+# Build:  docker build -f Dockerfile.multi02 -t workshop-go-multi .
+# Run:    docker run --rm -p 8080:8080 workshop-go-multi
+# Size:   docker images workshop-go-multi
+#         ≈ 5-8 MB (แค่ binary เท่านั้น!)
+#
+# ============================================
+# 🔥 เปรียบเทียบขนาด:
+#   docker images | grep workshop-go
+#
+#   workshop-go-single   latest   ~270 MB
+#   workshop-go-multi    latest   ~6 MB
+#
+#   ลดลง ~97%!!
+# ============================================

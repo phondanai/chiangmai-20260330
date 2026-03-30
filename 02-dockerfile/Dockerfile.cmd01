@@ -1,0 +1,21 @@
+# ===== Dockerfile.cmd01 =====
+# CMD - กำหนดคำสั่ง default ที่รันเมื่อ start container
+# มีได้ CMD เดียว (ถ้ามีหลายอันจะใช้อันสุดท้าย)
+
+FROM alpine:3
+
+RUN apk add --no-cache curl
+
+# Exec form (แนะนำ) — ใช้ JSON array
+CMD ["echo", "Hello from CMD"]
+
+# Build:  docker build -f Dockerfile.cmd01 -t workshop-cmd01 .
+# Run:    docker run --rm workshop-cmd01
+# Output: Hello from CMD
+
+# สามารถ override CMD ได้ตอน run:
+# Run:    docker run --rm workshop-cmd01 echo "Override!"
+# Output: Override!
+
+# Run:    docker run --rm workshop-cmd01 cat /etc/os-release
+# Output: (แสดง os-release)

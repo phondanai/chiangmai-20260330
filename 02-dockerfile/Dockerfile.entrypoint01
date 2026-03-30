@@ -1,0 +1,20 @@
+# ===== Dockerfile.entrypoint01 =====
+# ENTRYPOINT - ใช้ container เหมือนเป็น executable
+
+FROM alpine:3
+
+RUN apk add --no-cache curl
+
+ENTRYPOINT ["curl", "-s"]
+CMD ["https://httpbin.org/ip"]
+
+# Build:  docker build -f Dockerfile.entrypoint01 -t workshop-entrypoint01 .
+#
+# Run:    docker run --rm workshop-entrypoint01
+# Output: แสดง IP (curl https://httpbin.org/ip)
+#
+# Run:    docker run --rm workshop-entrypoint01 https://httpbin.org/user-agent
+# Output: แสดง user-agent (override CMD แต่ยังใช้ curl -s)
+#
+# ใช้ container เหมือน curl command:
+# Run:    docker run --rm workshop-entrypoint01 -I https://example.com

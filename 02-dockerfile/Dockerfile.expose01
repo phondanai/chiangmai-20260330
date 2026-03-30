@@ -1,0 +1,21 @@
+# ===== Dockerfile.expose01 =====
+# EXPOSE - ประกาศว่า container ใช้ port อะไร (เป็น documentation ไม่ได้เปิด port จริง)
+# ต้องใช้ -p ตอน run เพื่อ map port จริง
+
+FROM nginx:alpine
+
+COPY html/ /usr/share/nginx/html/
+
+# ประกาศ port (documentation purpose)
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
+# Build:  docker build -f Dockerfile.expose01 -t workshop-expose01 .
+#
+# ใช้ -p map port
+# Run:    docker run --rm -p 8080:80 workshop-expose01
+#
+# ใช้ -P ให้ Docker เลือก port อัตโนมัติ (ต้องมี EXPOSE)
+# Run:    docker run --rm -P workshop-expose01
+# แล้วดู port ด้วย: docker ps

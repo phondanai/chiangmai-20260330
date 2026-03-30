@@ -1,0 +1,25 @@
+# ===== Dockerfile.healthcheck01 =====
+# HEALTHCHECK - ตรวจสอบว่า container ยังทำงานถูกต้องหรือไม่
+# Docker จะรัน health check เป็นระยะ แสดงสถานะ healthy/unhealthy
+
+FROM nginx:alpine
+
+COPY html/ /usr/share/nginx/html/
+
+EXPOSE 80
+
+# ตรวจ health ทุก 30 วินาที, timeout 10 วินาที, retry 3 ครั้ง
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=5s \
+  CMD wget -q --spider http://localhost/ || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]
+
+# Build:  docker build -f Dockerfile.healthcheck01 -t workshop-health01 .
+# Run:    docker run -d --name health-test -p 8080:80 workshop-health01
+#
+# ดูสถานะ:
+# docker ps    (จะเห็น health status)
+# docker inspect health-test --format '{{json .State.Health}}' | jq
+#
+# Cleanup:
+# docker rm -f health-test
